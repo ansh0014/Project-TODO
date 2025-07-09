@@ -1,4 +1,4 @@
-package Todo
+package controllers
 
 import (
 	"encoding/json"
@@ -6,8 +6,11 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	// "your-module-name/model"
-	"project/model"
+	
+	"Todo/model"
+	
+
+	
 )
 
 var Todos []model.Todo
