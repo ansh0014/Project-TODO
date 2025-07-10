@@ -10,6 +10,7 @@ import (
 func RegisterRoutes() *mux.Router {
 	r := mux.NewRouter()
 	
+	r.HandleFunc("/Register", controllers.Register).Methods(http.MethodPost)
 	r.HandleFunc("/login", controllers.Login).Methods(http.MethodPost)
 	// Secure group
 	api := r.PathPrefix("/api").Subrouter()
