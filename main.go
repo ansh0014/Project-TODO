@@ -4,10 +4,16 @@ import (
 	"log"
 	"net/http"
 	"Todo/routes"
+	"Todo/config"
 )
 
 func main() {
+
+config.LoadEnv()
+
+	port := config.GetEnv("PORT", "8080")
 	r := routes.RegisterRoutes()
-	log.Println("Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+
+	log.Println("Server running on port:", port)
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }

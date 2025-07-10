@@ -8,11 +8,12 @@ import (
 	"Todo/model"
 
 	"github.com/golang-jwt/jwt/v5"
+	"os"
 )
 
 var userDB = make(map[string]string) // fake in-memory DB: username -> password
 
-var jwtKey = []byte("my_secret_key") // 🔐 In real apps, move to env
+var jwtKey = []byte(os.Getenv("JWT_SECRET")) // 🔐 In real apps, move to env
 
 // Register a new user
 func Register(w http.ResponseWriter, r *http.Request) {
