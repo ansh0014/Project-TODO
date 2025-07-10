@@ -8,10 +8,11 @@ import (
 	"Todo/model"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 	"os"
 )
 
-var userDB = make(map[string]string) // fake in-memory DB: username -> password
+var userDB = make(map[string]string) // fake in-memory DB: username -> hashed password
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET")) // 🔐 In real apps, move to env
 
@@ -29,7 +30,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDB[user.Username] = user.Password // 🔐 (store plain for now)
+	// Hash the password before storing
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		http.Error(w, "Error processing password", http.StatusInternalServerError)
+		return
+	}
+
+	userDB[user.Username] = string(hashedPassword)
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "User registered successfully",
@@ -45,8 +53,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	storedPass, exists := userDB[creds.Username]
-	if !exists || creds.Password != storedPass {
+	hashedPass, exists := userDB[creds.Username]
+	if !exists {
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+		return
+	}
+
+	// Compare hashed password with the password provided
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPass), []byte(creds.Password))
+	if err != nil {
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
