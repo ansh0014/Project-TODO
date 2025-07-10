@@ -4,10 +4,16 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
   "Todo/controllers"
+  "Todo/middleware"
 )
 
 func RegisterRoutes() *mux.Router {
 	r := mux.NewRouter()
+	
+	r.HandleFunc("/login", controllers.Login).Methods(http.MethodPost)
+	// Secure group
+	api := r.PathPrefix("/api").Subrouter()
+	api.Use(middleware.JWTMiddleware)
 
 	r.HandleFunc("/todos", controllers.GetTodo).Methods(http.MethodGet)
 	r.HandleFunc("/todos", controllers.AddTodo).Methods(http.MethodPost)
