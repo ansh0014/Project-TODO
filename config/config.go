@@ -8,7 +8,7 @@ import (
 )
 
 func LoadEnv() {
-	err := godotenv.Load()
+	err := godotenv.Load("D:/Todo/Project-TODO/config")
 	if err != nil {
 		log.Println("No env file")
 	}
