@@ -3,17 +3,24 @@ package main
 import (
 	"log"
 	"net/http"
-	"Todo/routes"
+
 	"Todo/config"
+	"Todo/routes"
 )
 
 func main() {
+	// Load environment variables
+	config.LoadEnv()
 
-config.LoadEnv()
-
+	// Get the port from environment or fallback to default
 	port := config.GetEnv("PORT", "8080")
-	r := routes.RegisterRoutes()
 
-	log.Println("Server running on port:", port)
-	log.Fatal(http.ListenAndServe(":"+port, r))
+	// Register application routes
+	router := routes.RegisterRoutes()
+
+	// Start the HTTP server
+	log.Println("🚀 Server running on port:", port)
+	if err := http.ListenAndServe(":"+port, router); err != nil {
+		log.Fatalf("Server failed to start: %v", err)
+	}
 }
